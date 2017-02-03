@@ -1,0 +1,11 @@
+{
+    "name": "php-content-stylizer",
+    "private": true,
+    "devDependencies": {
+        "grunt": "^1.0",
+        "grunt-phpcpd": "^0.2.0",
+        "grunt-phpcs": "^0.4.0",
+        "grunt-phpmd": "^0.1.1",
+        "grunt-phpunit": "^0.3.6"
+    }
+}
