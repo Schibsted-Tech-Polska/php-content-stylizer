@@ -70,6 +70,7 @@ class MarkupTest extends PHPUnit_Framework_TestCase
             $this->assertInstanceOf(Model::class, $this->model->addParam($key, $value));
         }
         $count = 0;
+        $this->model->setParams($this->model->getParams());
         $paramsObject = $this->model->getParams();
         foreach ($paramsObject as $key => $value) {
             $this->assertArrayHasKey($key, $params);

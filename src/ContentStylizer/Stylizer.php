@@ -104,11 +104,11 @@ class Stylizer
     /**
      * Get markups
      *
-     * @param array|stdClass $markupsData markups data
+     * @param array $markupsData markups data
      *
-     * @return array
+     * @return Markup[]
      */
-    private function getMarkups($markupsData)
+    private function getMarkups(array $markupsData)
     {
         $markups = [];
         $configFields = [
@@ -133,6 +133,107 @@ class Stylizer
                 $markups[] = $markup;
             }
         }
+        $markups = $this->fixMarkupsInheritance($this->sortMarkups($markups));
+
+        return $markups;
+    }
+
+    /**
+     * Sort markups
+     *
+     * @param Markup[] $markups markups
+     *
+     * @return Markup[]
+     */
+    private function sortMarkups(array $markups)
+    {
+        usort($markups, [
+            $this,
+            'compareMarkups',
+        ]);
+
+        return $markups;
+    }
+
+    /**
+     * Compare markups
+     *
+     * @param Markup $markupA markup A
+     * @param Markup $markupB markup B
+     *
+     * @return int
+     */
+    private function compareMarkups(Markup $markupA, Markup $markupB)
+    {
+        // Sorting by opening position ascending
+        $primarySortResult = $markupA->getOffset() - $markupB->getOffset();
+        if ($primarySortResult != 0) {
+            return $primarySortResult;
+        }
+
+        // Sorting by length (closing position) descending
+        $secondarySortResult = $markupB->getLength() - $markupA->getLength();
+
+        return $secondarySortResult;
+    }
+
+    /**
+     * Fix markups inheritance
+     *
+     * @param Markup[] $markups markups
+     *
+     * @return Markup[]
+     */
+    private function fixMarkupsInheritance(array $markups)
+    {
+        /** @var Markup[] $markupStack */
+        $markupStack = [];
+        for ($i = 0; $i < count($markups); $i++) {
+            $markup = $markups[$i];
+
+            // Remove all already "finished" markups from inheritance stack
+            while (false !== $lastMarkup = reset($markupStack)) {
+                if ($lastMarkup->getPositionEnd() <= $markup->getPositionBeginning()) {
+                    array_shift($markupStack);
+                } else {
+                    break;
+                }
+            }
+
+            // Divides markup if it's longer than its parent
+            if ($lastMarkup !== false && $markup->getPositionEnd() > $lastMarkup->getPositionEnd()) {
+                $divisionPosition = $lastMarkup->getPositionEnd();
+
+                // Create second part of divided markup and put it in correct place inside an array
+                $secondPartMarkup = new Markup();
+                $secondPartMarkup
+                    ->setTag($markup->getTag())
+                    ->setParams($markup->getParams())
+                    ->setOffset($divisionPosition)
+                    ->setLength($markup->getPositionEnd() - $divisionPosition)
+                ;
+
+                for ($j = $i + 1, $length = count($markups); $j < $length; $j++) {
+                    if ($this->compareMarkups($markups[$j], $secondPartMarkup) >= 0) {
+                        array_splice($markups, $j, 0, [
+                            $secondPartMarkup,
+                        ]);
+                        unset($secondPartMarkup);
+                        break;
+                    }
+                }
+                if (isset($secondPartMarkup)) {
+                    array_push($markups, $secondPartMarkup);
+                    unset($secondPartMarkup);
+                }
+
+                // Cut first part of markup
+                $markup->setLength($divisionPosition - $markup->getPositionBeginning());
+            }
+
+            // Puts current markup on inheritance stack
+            array_unshift($markupStack, $markup);
+        }
 
         return $markups;
     }
@@ -143,7 +244,7 @@ class Stylizer
      * @param string   $text    text
      * @param Markup[] $markups markups
      *
-     * @return array
+     * @return Markup[]
      */
     private function addLineBreakMarkups($text, array $markups)
     {
@@ -215,7 +316,7 @@ class Stylizer
      * @param string $type            type
      * @param Markup $markup          markup
      *
-     * @return Occurence[]
+     * @return array
      */
     private function addOccurence(array $occurencesByPos, $position, $type, Markup $markup)
     {

@@ -147,6 +147,20 @@ class Markup
     }
 
     /**
+     * Set params
+     *
+     * @param stdClass $params params
+     *
+     * @return self
+     */
+    public function setParams(stdClass $params)
+    {
+        $this->params = $params;
+
+        return $this;
+    }
+
+    /**
      * Get tag beginning
      *
      * @return int
