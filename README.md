@@ -77,4 +77,4 @@ We can define it using `addTag` method as well:
 $stylizer->addTag('br', '<br>');
 ```
 
-If we define `br` tag, Stylizer will also add line break in every place in text before every `\n` sign occurence.
+If we define `br` tag, Stylizer will also add line break in every place in text before `PHP_EOL` sign occurence.
