@@ -92,6 +92,10 @@ class Stylizer
      */
     public function getHtml($text, array $markupsData = [])
     {
+        if (empty($text)) {
+            return $text;
+        }
+
         $markups = $this->getMarkups($markupsData);
         $markups = $this->addLineBreakMarkups($text, $markups);
         $occurencesByPos = $this->getOccurencesByPositions($markups);

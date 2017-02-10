@@ -78,3 +78,18 @@ $stylizer->addTag('br', '<br>');
 ```
 
 If we define `br` tag, Stylizer will also add line break in every place in text before `PHP_EOL` sign occurence.
+
+## Tests:
+
+This library contains unit tests and some other CI tools which can be easily run using Node.js. To do it install Node.js environment, then Grunt CLI:
+```
+sudo npm install -g grunt-cli
+```
+and project dependencies:
+```
+npm install
+```
+To start testing just simply execute:
+```
+grunt test
+```
