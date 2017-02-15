@@ -1,9 +1,9 @@
 {
-    "name": "svd/php-content-stylizer",
+    "name": "schibsted-tech-polska/php-content-stylizer",
     "description": "Content stylizer for Schibsted Media Platform data",
     "type": "library",
     "keywords": ["content", "stylizer", "stylizr", "svd"],
-    "homepage": "https://github.schibsted.io/SvD/php-content-stylizer",
+    "homepage": "https://github.com/Schibsted-Tech-Polska/php-content-stylizer",
     "license": "MIT",
     "authors": [
         {
